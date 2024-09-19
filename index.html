@@ -20,17 +20,18 @@
         let player = { x: canvas.width / 2, y: canvas.height / 2, health: 100, score: 0 };
         let bullets = [];
         let enemies = [];
-        const keys = {};
+        let keys = {};
 
-        document.addEventListener('keydown', (e) => keys[e.code] = true);
-        document.addEventListener('keyup', (e) => keys[e.code] = false);
+        document.addEventListener('keydown', (e) => { keys[e.code] = true; });
+        document.addEventListener('keyup', (e) => { keys[e.code] = false; });
         document.addEventListener('mousedown', shoot);
+        document.addEventListener('mousemove', (e) => { player.mouseX = e.clientX; player.mouseY = e.clientY; });
 
         function shoot() {
-            bullets.push({ x: player.x, y: player.y, angle: Math.random() * Math.PI * 2 });
+            bullets.push({ x: player.x, y: player.y, angle: Math.atan2(player.mouseY - player.y, player.mouseX - player.x) });
         }
 
-        function createEnemy() {
+        function spawnEnemy() {
             enemies.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height });
         }
 
@@ -81,11 +82,15 @@
             ctx.fillRect(player.x - 25, player.y - 25, 50, 50);
             bullets.forEach(bullet => {
                 ctx.fillStyle = 'yellow';
-                ctx.fillRect(bullet.x, bullet.y, 5, 5);
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, 5, 0, Math.PI * 2);
+                ctx.fill();
             });
             enemies.forEach(enemy => {
                 ctx.fillStyle = 'red';
-                ctx.fillRect(enemy.x - 25, enemy.y - 25, 50, 50);
+                ctx.beginPath();
+                ctx.arc(enemy.x, enemy.y, 20, 0, Math.PI * 2);
+                ctx.fill();
             });
             ctx.fillStyle = 'black';
             ctx.fillText(`Score: ${player.score}`, 10, 20);
@@ -98,7 +103,7 @@
             requestAnimationFrame(gameLoop);
         }
 
-        setInterval(createEnemy, 1000);
+        setInterval(spawnEnemy, 1000);
         gameLoop();
     </script>
 </body>
