@@ -1,4 +1,4 @@
-# FPS Game Website
+# FPS Game with Enemies and Leaderboard
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,7 +8,7 @@
     <title>FPS Game</title>
     <style>
         body { margin: 0; overflow: hidden; }
-        canvas { display: block; background: #000; }
+        canvas { background: #000; display: block; margin: auto; }
         #leaderboard { position: absolute; top: 10px; left: 10px; color: white; }
     </style>
 </head>
@@ -22,32 +22,73 @@
         canvas.height = window.innerHeight;
 
         let player = { x: canvas.width / 2, y: canvas.height / 2, score: 0 };
+        let bullets = [];
         let enemies = [];
         const enemyCount = 5;
 
-        for (let i = 0; i < enemyCount; i++) {
-            enemies.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height });
+        function createEnemies() {
+            for (let i = 0; i < enemyCount; i++) {
+                enemies.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height });
+            }
         }
 
-        function update() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function drawPlayer() {
             ctx.fillStyle = 'blue';
             ctx.fillRect(player.x, player.y, 20, 20);
+        }
 
-            enemies.forEach((enemy, index) => {
-                ctx.fillStyle = 'red';
+        function drawEnemies() {
+            ctx.fillStyle = 'red';
+            enemies.forEach(enemy => {
                 ctx.fillRect(enemy.x, enemy.y, 20, 20);
-                if (Math.abs(player.x - enemy.x) < 20 && Math.abs(player.y - enemy.y) < 20) {
-                    player.score++;
-                    enemies.splice(index, 1);
-                    enemies.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height });
-                }
-                enemy.x += (player.x - enemy.x) * 0.01;
-                enemy.y += (player.y - enemy.y) * 0.01;
             });
+        }
 
-            document.getElementById('leaderboard').innerText = `Score: ${player.score}`;
-            requestAnimationFrame(update);
+        function drawBullets() {
+            ctx.fillStyle = 'yellow';
+            bullets.forEach(bullet => {
+                ctx.fillRect(bullet.x, bullet.y, 5, 5);
+            });
+        }
+
+        function updateEnemies() {
+            enemies.forEach(enemy => {
+                if (enemy.x < player.x) enemy.x += 0.5;
+                if (enemy.x > player.x) enemy.x -= 0.5;
+                if (enemy.y < player.y) enemy.y += 0.5;
+                if (enemy.y > player.y) enemy.y -= 0.5;
+            });
+        }
+
+        function updateBullets() {
+            bullets.forEach((bullet, index) => {
+                bullet.y -= 5;
+                if (bullet.y < 0) bullets.splice(index, 1);
+            });
+        }
+
+        function checkCollisions() {
+            bullets.forEach((bullet, bIndex) => {
+                enemies.forEach((enemy, eIndex) => {
+                    if (bullet.x < enemy.x + 20 && bullet.x + 5 > enemy.x && bullet.y < enemy.y + 20 && bullet.y + 5 > enemy.y) {
+                        bullets.splice(bIndex, 1);
+                        enemies.splice(eIndex, 1);
+                        player.score += 10;
+                        document.getElementById('leaderboard').innerText = 'Score: ' + player.score;
+                    }
+                });
+            });
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlayer();
+            drawEnemies();
+            drawBullets();
+            updateEnemies();
+            updateBullets();
+            checkCollisions();
+            requestAnimationFrame(gameLoop);
         }
 
         window.addEventListener('keydown', (e) => {
@@ -55,9 +96,11 @@
             if (e.key === 'ArrowDown') player.y += 5;
             if (e.key === 'ArrowLeft') player.x -= 5;
             if (e.key === 'ArrowRight') player.x += 5;
+            if (e.key === ' ') bullets.push({ x: player.x + 7.5, y: player.y });
         });
 
-        update();
+        createEnemies();
+        gameLoop();
     </script>
 </body>
 </html>
