@@ -21,22 +21,9 @@
         let bullets = [];
         let enemies = [];
         let keys = {};
-        let mouseX, mouseY;
-
-        document.addEventListener('keydown', (e) => keys[e.key] = true);
-        document.addEventListener('keyup', (e) => keys[e.key] = false);
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
-        document.addEventListener('click', shoot);
-
-        function shoot() {
-            bullets.push({ x: player.x, y: player.y, angle: Math.atan2(mouseY - player.y, mouseX - player.x) });
-        }
 
         function spawnEnemy() {
-            enemies.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height });
+            enemies.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, health: 50 });
         }
 
         function update() {
@@ -46,35 +33,33 @@
             if (keys['d']) player.x += 5;
 
             bullets.forEach((bullet, index) => {
-                bullet.x += Math.cos(bullet.angle) * 10;
-                bullet.y += Math.sin(bullet.angle) * 10;
+                bullet.x += bullet.dx;
+                bullet.y += bullet.dy;
                 if (bullet.x < 0 || bullet.x > canvas.width || bullet.y < 0 || bullet.y > canvas.height) {
                     bullets.splice(index, 1);
                 }
             });
 
             enemies.forEach((enemy, index) => {
-                const dx = player.x - enemy.x;
-                const dy = player.y - enemy.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 50) {
+                if (Math.hypot(player.x - enemy.x, player.y - enemy.y) < 50) {
                     player.health -= 1;
                     enemies.splice(index, 1);
-                } else {
-                    enemy.x += dx / distance;
-                    enemy.y += dy / distance;
+                }
+                if (enemy.health > 0) {
+                    enemy.x += (player.x - enemy.x) * 0.01;
+                    enemy.y += (player.y - enemy.y) * 0.01;
                 }
             });
 
             bullets.forEach((bullet, bIndex) => {
                 enemies.forEach((enemy, eIndex) => {
-                    const dx = bullet.x - enemy.x;
-                    const dy = bullet.y - enemy.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < 10) {
-                        player.score += 1;
+                    if (Math.hypot(bullet.x - enemy.x, bullet.y - enemy.y) < 20) {
+                        enemy.health -= 50;
                         bullets.splice(bIndex, 1);
-                        enemies.splice(eIndex, 1);
+                        if (enemy.health <= 0) {
+                            player.score += 1;
+                            enemies.splice(eIndex, 1);
+                        }
                     }
                 });
             });
@@ -83,14 +68,14 @@
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = 'blue';
-            ctx.fillRect(player.x - 25, player.y - 25, 50, 50);
+            ctx.fillRect(player.x, player.y, 20, 20);
             bullets.forEach(bullet => {
-                ctx.fillStyle = 'yellow';
+                ctx.fillStyle = 'red';
                 ctx.fillRect(bullet.x, bullet.y, 5, 5);
             });
             enemies.forEach(enemy => {
-                ctx.fillStyle = 'red';
-                ctx.fillRect(enemy.x - 25, enemy.y - 25, 50, 50);
+                ctx.fillStyle = 'green';
+                ctx.fillRect(enemy.x, enemy.y, 20, 20);
             });
             ctx.fillStyle = 'black';
             ctx.fillText(`Score: ${player.score}`, 10, 20);
@@ -102,6 +87,13 @@
             draw();
             requestAnimationFrame(gameLoop);
         }
+
+        window.addEventListener('keydown', (e) => { keys[e.key] = true; });
+        window.addEventListener('keyup', (e) => { keys[e.key] = false; });
+        window.addEventListener('mousedown', (e) => {
+            const angle = Math.atan2(e.clientY - player.y, e.clientX - player.x);
+            bullets.push({ x: player.x, y: player.y, dx: Math.cos(angle) * 10, dy: Math.sin(angle) * 10 });
+        });
 
         setInterval(spawnEnemy, 1000);
         gameLoop();
