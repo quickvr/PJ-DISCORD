@@ -20,14 +20,14 @@
         let player = { x: canvas.width / 2, y: canvas.height / 2, health: 100, score: 0 };
         let bullets = [];
         let enemies = [];
-        let keys = {};
+        const keys = {};
 
-        document.addEventListener('keydown', (e) => { keys[e.code] = true; });
-        document.addEventListener('keyup', (e) => { keys[e.code] = false; });
+        document.addEventListener('keydown', (e) => keys[e.code] = true);
+        document.addEventListener('keyup', (e) => keys[e.code] = false);
         document.addEventListener('mousedown', shoot);
 
         function shoot() {
-            bullets.push({ x: player.x, y: player.y, angle: Math.random() * 2 * Math.PI });
+            bullets.push({ x: player.x, y: player.y, angle: Math.random() * Math.PI * 2 });
         }
 
         function createEnemy() {
@@ -49,18 +49,27 @@
             });
 
             enemies.forEach((enemy, index) => {
-                if (Math.hypot(player.x - enemy.x, player.y - enemy.y) < 50) {
+                const dx = player.x - enemy.x;
+                const dy = player.y - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 50) {
                     player.health -= 1;
+                    enemies.splice(index, 1);
+                } else {
+                    enemy.x += dx / distance;
+                    enemy.y += dy / distance;
                 }
-                if (player.health <= 0) {
-                    alert('Game Over');
-                    document.location.reload();
-                }
-                bullets.forEach((bullet, bIndex) => {
-                    if (Math.hypot(bullet.x - enemy.x, bullet.y - enemy.y) < 20) {
-                        enemies.splice(index, 1);
-                        bullets.splice(bIndex, 1);
+            });
+
+            bullets.forEach((bullet, bIndex) => {
+                enemies.forEach((enemy, eIndex) => {
+                    const dx = bullet.x - enemy.x;
+                    const dy = bullet.y - enemy.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 10) {
                         player.score += 1;
+                        bullets.splice(bIndex, 1);
+                        enemies.splice(eIndex, 1);
                     }
                 });
             });
