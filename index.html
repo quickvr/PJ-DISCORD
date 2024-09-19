@@ -5,46 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multi-Page Website</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        nav { background-color: #333; color: white; padding: 10px; }
-        nav a { color: white; margin: 0 15px; text-decoration: none; }
-        .content { padding: 20px; }
-        .page { display: none; }
-        .active { display: block; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav {
+            margin: 20px 0;
+        }
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #35424a;
+        }
+        .content {
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background: #35424a;
+            color: #ffffff;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
     </style>
+    <script>
+        function showPage(page) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(p => p.style.display = 'none');
+            document.getElementById(page).style.display = 'block';
+        }
+        window.onload = function() {
+            showPage('home');
+        };
+    </script>
 </head>
 <body>
-
-<nav>
-    <a href="#" onclick="showPage('home')">Home</a>
-    <a href="#" onclick="showPage('about')">About</a>
-    <a href="#" onclick="showPage('contact')">Contact</a>
-</nav>
-
-<div class="content">
-    <div id="home" class="page active">
-        <h1>Welcome to Our Website</h1>
-        <p>This is the home page.</p>
+    <header>
+        <h1>My Multi-Page Website</h1>
+        <nav>
+            <a href="javascript:void(0);" onclick="showPage('home')">Home</a>
+            <a href="javascript:void(0);" onclick="showPage('about')">About</a>
+            <a href="javascript:void(0);" onclick="showPage('contact')">Contact</a>
+        </nav>
+    </header>
+    <div class="content">
+        <div id="home" class="page">
+            <h2>Welcome to the Home Page</h2>
+            <p>This is the home page of the website.</p>
+        </div>
+        <div id="about" class="page" style="display:none;">
+            <h2>About Us</h2>
+            <p>This page contains information about us.</p>
+        </div>
+        <div id="contact" class="page" style="display:none;">
+            <h2>Contact Us</h2>
+            <p>This page provides contact information.</p>
+        </div>
     </div>
-    <div id="about" class="page">
-        <h1>About Us</h1>
-        <p>This page contains information about us.</p>
-    </div>
-    <div id="contact" class="page">
-        <h1>Contact Us</h1>
-        <p>This page provides contact information.</p>
-    </div>
-</div>
-
-<script>
-    function showPage(pageId) {
-        const pages = document.querySelectorAll('.page');
-        pages.forEach(page => {
-            page.classList.remove('active');
-        });
-        document.getElementById(pageId).classList.add('active');
-    }
-</script>
-
+    <footer>
+        <p>&copy; 2023 My Multi-Page Website</p>
+    </footer>
 </body>
 </html>
