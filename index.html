@@ -54,42 +54,44 @@
             });
 
             enemies.forEach((enemy, index) => {
-                const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
-                enemy.x += Math.cos(angle) * 2;
-                enemy.y += Math.sin(angle) * 2;
-
-                if (Math.hypot(player.x - enemy.x, player.y - enemy.y) < 30) {
+                const dx = player.x - enemy.x;
+                const dy = player.y - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 50) {
                     player.health -= 1;
                     enemies.splice(index, 1);
+                } else {
+                    enemy.x += dx / distance;
+                    enemy.y += dy / distance;
                 }
+            });
 
-                bullets.forEach((bullet, bIndex) => {
-                    if (Math.hypot(bullet.x - enemy.x, bullet.y - enemy.y) < 15) {
+            bullets.forEach((bullet, bIndex) => {
+                enemies.forEach((enemy, eIndex) => {
+                    const dx = bullet.x - enemy.x;
+                    const dy = bullet.y - enemy.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 10) {
                         player.score += 1;
                         bullets.splice(bIndex, 1);
-                        enemies.splice(index, 1);
+                        enemies.splice(eIndex, 1);
                     }
                 });
             });
-
-            if (Math.random() < 0.02) spawnEnemy();
         }
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = 'blue';
-            ctx.fillRect(player.x - 15, player.y - 15, 30, 30);
-
+            ctx.fillRect(player.x - 25, player.y - 25, 50, 50);
             bullets.forEach(bullet => {
                 ctx.fillStyle = 'yellow';
                 ctx.fillRect(bullet.x, bullet.y, 5, 5);
             });
-
             enemies.forEach(enemy => {
                 ctx.fillStyle = 'red';
-                ctx.fillRect(enemy.x - 15, enemy.y - 15, 30, 30);
+                ctx.fillRect(enemy.x - 25, enemy.y - 25, 50, 50);
             });
-
             ctx.fillStyle = 'black';
             ctx.fillText(`Score: ${player.score}`, 10, 20);
             ctx.fillText(`Health: ${player.health}`, 10, 40);
@@ -101,6 +103,7 @@
             requestAnimationFrame(gameLoop);
         }
 
+        setInterval(spawnEnemy, 1000);
         gameLoop();
     </script>
 </body>
