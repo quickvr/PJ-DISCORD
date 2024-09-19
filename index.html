@@ -1,3 +1,5 @@
+# FPS Game with Enemies and Leaderboard
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,80 +7,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FPS Game</title>
     <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { background: #000; display: block; margin: auto; }
-        #leaderboard { position: absolute; top: 10px; left: 10px; color: white; }
+        body { font-family: Arial, sans-serif; }
+        #gameArea { width: 800px; height: 600px; border: 1px solid #000; position: relative; }
+        .player { width: 50px; height: 50px; background: blue; position: absolute; }
+        .enemy { width: 50px; height: 50px; background: red; position: absolute; }
+        #leaderboard { margin-top: 20px; }
     </style>
 </head>
 <body>
-    <div id="leaderboard">Score: 0</div>
-    <canvas id="gameCanvas"></canvas>
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
 
-        let score = 0;
-        const enemies = [];
-        const player = { x: canvas.width / 2, y: canvas.height / 2, size: 20 };
+<div id="gameArea">
+    <div class="player" id="player"></div>
+</div>
+<div id="leaderboard">
+    <h2>Leaderboard</h2>
+    <ul id="scoreList"></ul>
+</div>
 
-        function spawnEnemy() {
-            const enemy = {
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: 20
-            };
-            enemies.push(enemy);
+<script>
+    const player = document.getElementById('player');
+    const gameArea = document.getElementById('gameArea');
+    const scoreList = document.getElementById('scoreList');
+    let score = 0;
+
+    player.style.left = '375px';
+    player.style.top = '525px';
+
+    function createEnemy() {
+        const enemy = document.createElement('div');
+        enemy.className = 'enemy';
+        enemy.style.left = Math.random() * (gameArea.clientWidth - 50) + 'px';
+        enemy.style.top = '0px';
+        gameArea.appendChild(enemy);
+        moveEnemy(enemy);
+    }
+
+    function moveEnemy(enemy) {
+        let enemyInterval = setInterval(() => {
+            let enemyTop = parseInt(enemy.style.top);
+            if (enemyTop < gameArea.clientHeight) {
+                enemy.style.top = enemyTop + 5 + 'px';
+            } else {
+                clearInterval(enemyInterval);
+                gameArea.removeChild(enemy);
+            }
+        }, 100);
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowLeft') {
+            player.style.left = Math.max(0, parseInt(player.style.left) - 10) + 'px';
+        } else if (event.key === 'ArrowRight') {
+            player.style.left = Math.min(gameArea.clientWidth - 50, parseInt(player.style.left) + 10) + 'px';
+        } else if (event.key === ' ') {
+            shoot();
         }
+    });
 
-        function drawPlayer() {
-            ctx.fillStyle = 'blue';
-            ctx.beginPath();
-            ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
-            ctx.fill();
+    function shoot() {
+        const bullet = document.createElement('div');
+        bullet.style.width = '5px';
+        bullet.style.height = '20px';
+        bullet.style.background = 'yellow';
+        bullet.style.position = 'absolute';
+        bullet.style.left = parseInt(player.style.left) + 22.5 + 'px';
+        bullet.style.top = '500px';
+        gameArea.appendChild(bullet);
+        moveBullet(bullet);
+    }
+
+    function moveBullet(bullet) {
+        let bulletInterval = setInterval(() => {
+            let bulletTop = parseInt(bullet.style.top);
+            if (bulletTop > 0) {
+                bullet.style.top = bulletTop - 10 + 'px';
+                checkCollision(bullet);
+            } else {
+                clearInterval(bulletInterval);
+                gameArea.removeChild(bullet);
+            }
+        }, 100);
+    }
+
+    function checkCollision(bullet) {
+        const enemies = document.getElementsByClassName('enemy');
+        for (let enemy of enemies) {
+            if (isColliding(bullet, enemy)) {
+                score++;
+                updateLeaderboard();
+                gameArea.removeChild(enemy);
+                gameArea.removeChild(bullet);
+                break;
+            }
         }
+    }
 
-        function drawEnemies() {
-            ctx.fillStyle = 'red';
-            enemies.forEach(enemy => {
-                ctx.beginPath();
-                ctx.arc(enemy.x, enemy.y, enemy.size, 0, Math.PI * 2);
-                ctx.fill();
-            });
-        }
+    function isColliding(bullet, enemy) {
+        const bulletRect = bullet.getBoundingClientRect();
+        const enemyRect = enemy.getBoundingClientRect();
+        return !(
+            bulletRect.top > enemyRect.bottom ||
+            bulletRect.bottom < enemyRect.top ||
+            bulletRect.right < enemyRect.left ||
+            bulletRect.left > enemyRect.right
+        );
+    }
 
-        function updateLeaderboard() {
-            document.getElementById('leaderboard').innerText = `Score: ${score}`;
-        }
+    function updateLeaderboard() {
+        scoreList.innerHTML = `<li>Player: ${score} points</li>`;
+    }
 
-        function shootEnemy(x, y) {
-            enemies.forEach((enemy, index) => {
-                const dist = Math.hypot(enemy.x - x, enemy.y - y);
-                if (dist < enemy.size + player.size) {
-                    enemies.splice(index, 1);
-                    score++;
-                    updateLeaderboard();
-                }
-            });
-        }
+    setInterval(createEnemy, 2000);
+</script>
 
-        canvas.addEventListener('click', (event) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-            shootEnemy(x, y);
-        });
-
-        function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawPlayer();
-            drawEnemies();
-            requestAnimationFrame(gameLoop);
-        }
-
-        setInterval(spawnEnemy, 1000);
-        gameLoop();
-    </script>
 </body>
 </html>
