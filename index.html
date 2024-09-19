@@ -7,81 +7,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FPS Game</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-        }
-        #gameArea {
-            width: 800px;
-            height: 600px;
-            background-color: #000;
-            position: relative;
-            margin: 20px auto;
-            overflow: hidden;
-        }
-        .enemy {
-            width: 50px;
-            height: 50px;
-            background-color: red;
-            position: absolute;
-        }
-        #leaderboard {
-            width: 300px;
-            margin: 20px auto;
-            background-color: #fff;
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; background: #000; }
+        #leaderboard { position: absolute; top: 10px; left: 10px; color: white; }
     </style>
 </head>
 <body>
-
-    <h1 style="text-align: center;">FPS Game</h1>
-    <div id="gameArea"></div>
-    <div id="leaderboard">
-        <h2>Leaderboard</h2>
-        <ul id="scoreList"></ul>
-    </div>
-
+    <div id="leaderboard">Score: 0</div>
+    <canvas id="gameCanvas"></canvas>
     <script>
-        let score = 0;
-        const enemies = [];
-        const gameArea = document.getElementById('gameArea');
-        const scoreList = document.getElementById('scoreList');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-        function createEnemy() {
-            const enemy = document.createElement('div');
-            enemy.className = 'enemy';
-            enemy.style.top = Math.random() * (gameArea.clientHeight - 50) + 'px';
-            enemy.style.left = Math.random() * (gameArea.clientWidth - 50) + 'px';
-            gameArea.appendChild(enemy);
-            enemies.push(enemy);
+        let player = { x: canvas.width / 2, y: canvas.height / 2, score: 0 };
+        let enemies = [];
+        const enemyCount = 5;
+
+        for (let i = 0; i < enemyCount; i++) {
+            enemies.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height });
         }
 
-        function shootEnemy(event) {
-            const x = event.clientX - gameArea.offsetLeft;
-            const y = event.clientY - gameArea.offsetTop;
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(player.x, player.y, 20, 20);
 
             enemies.forEach((enemy, index) => {
-                const rect = enemy.getBoundingClientRect();
-                if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-                    gameArea.removeChild(enemy);
+                ctx.fillStyle = 'red';
+                ctx.fillRect(enemy.x, enemy.y, 20, 20);
+                if (Math.abs(player.x - enemy.x) < 20 && Math.abs(player.y - enemy.y) < 20) {
+                    player.score++;
                     enemies.splice(index, 1);
-                    score += 10;
-                    updateLeaderboard();
+                    enemies.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height });
                 }
+                enemy.x += (player.x - enemy.x) * 0.01;
+                enemy.y += (player.y - enemy.y) * 0.01;
             });
+
+            document.getElementById('leaderboard').innerText = `Score: ${player.score}`;
+            requestAnimationFrame(update);
         }
 
-        function updateLeaderboard() {
-            scoreList.innerHTML = `<li>Score: ${score}</li>`;
-        }
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') player.y -= 5;
+            if (e.key === 'ArrowDown') player.y += 5;
+            if (e.key === 'ArrowLeft') player.x -= 5;
+            if (e.key === 'ArrowRight') player.x += 5;
+        });
 
-        document.addEventListener('click', shootEnemy);
-        setInterval(createEnemy, 1000);
+        update();
     </script>
-
 </body>
 </html>
