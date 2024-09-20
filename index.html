@@ -1,43 +1,38 @@
-# Game Development and Live Streaming Website
+# Real Time Chat Room
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Development and Live Streaming</title>
+    <title>Real Time Chat Room</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Welcome to My Game Development and Live Streaming Hub</h1>
-    </header>
-    <nav>
-        <ul>
-            <li><a href="#about">About</a></li>
-            <li><a href="#live-stream">Live Stream</a></li>
-            <li><a href="#chat-room">Chat Room</a></li>
-        </ul>
-    </nav>
-    <section id="about">
-        <h2>About Me</h2>
-        <p>Join me on my journey of game development and live streaming!</p>
-    </section>
-    <section id="live-stream">
-        <h2>Live Stream</h2>
-        <iframe src="https://www.twitch.tv/embed/YOUR_CHANNEL_NAME" height="480" width="720" frameborder="0" scrolling="no" allowfullscreen="true"></iframe>
-    </section>
-    <section id="chat-room">
-        <h2>Chat Room</h2>
-        <div id="chat-box">
-            <div id="messages"></div>
-            <input type="text" id="message-input" placeholder="Type your message here...">
-            <button id="send-button">Send</button>
-        </div>
-    </section>
-    <footer>
-        <p>&copy; 2023 My Game Development and Live Streaming</p>
-    </footer>
-    <script src="script.js"></script>
+    <div id="chat-container">
+        <div id="messages"></div>
+        <input id="message-input" type="text" placeholder="Type your message here...">
+        <button id="send-button">Send</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <script>
+        const socket = io('http://localhost:3000');
+        const messages = document.getElementById('messages');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+
+        socket.on('message', (message) => {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            messages.appendChild(messageElement);
+        });
+
+        sendButton.addEventListener('click', () => {
+            const message = messageInput.value;
+            socket.emit('message', message);
+            messageInput.value = '';
+        });
+    </script>
 </body>
 </html>
