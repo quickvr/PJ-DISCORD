@@ -1,36 +1,36 @@
+# 3D FPS Game Website
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Room</title>
+    <title>3D FPS Game</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body>
-    <div id="chat-container">
-        <div id="messages"></div>
-        <input id="message-input" type="text" placeholder="Type your message here..." />
-        <button id="send-button">Send</button>
-    </div>
-
-    <script>
-        const socket = io('https://quickvr.github.io/CanierGameDevelopment');
-        const messagesDiv = document.getElementById('messages');
-        const messageInput = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
-
-        sendButton.addEventListener('click', () => {
-            const message = messageInput.value;
-            socket.emit('chat message', message);
-            messageInput.value = '';
-        });
-
-        socket.on('chat message', (msg) => {
-            const messageElement = document.createElement('div');
-            messageElement.textContent = msg;
-            messagesDiv.appendChild(messageElement);
-        });
-    </script>
+    <header>
+        <h1>Welcome to the 3D FPS Game</h1>
+    </header>
+    <main>
+        <section id="game-container">
+            <canvas id="gameCanvas"></canvas>
+        </section>
+        <section id="controls">
+            <h2>Controls</h2>
+            <ul>
+                <li>W - Move Forward</li>
+                <li>S - Move Backward</li>
+                <li>A - Move Left</li>
+                <li>D - Move Right</li>
+                <li>Space - Jump</li>
+                <li>Mouse - Look Around</li>
+            </ul>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 3D FPS Game. All rights reserved.</p>
+    </footer>
+    <script src="game.js"></script>
 </body>
 </html>
