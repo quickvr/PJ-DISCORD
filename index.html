@@ -4,39 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Room</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        #chat { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; }
-        #message { width: 80%; }
-        #send { width: 18%; }
-    </style>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body>
-    <h1>Chat Room</h1>
-    <div id="chat"></div>
-    <input type="text" id="message" placeholder="Type your message here...">
-    <button id="send">Send</button>
+    <div id="chat-container">
+        <div id="messages"></div>
+        <input id="message-input" type="text" placeholder="Type your message here..." />
+        <button id="send-button">Send</button>
+    </div>
 
     <script>
-        const chat = document.getElementById('chat');
-        const messageInput = document.getElementById('message');
-        const sendButton = document.getElementById('send');
+        const socket = io('https://quickvr.github.io/CanierGameDevelopment');
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
 
         sendButton.addEventListener('click', () => {
             const message = messageInput.value;
-            if (message) {
-                const messageElement = document.createElement('div');
-                messageElement.textContent = message;
-                chat.appendChild(messageElement);
-                messageInput.value = '';
-                chat.scrollTop = chat.scrollHeight;
-            }
+            socket.emit('chat message', message);
+            messageInput.value = '';
         });
 
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendButton.click();
-            }
+        socket.on('chat message', (msg) => {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = msg;
+            messagesDiv.appendChild(messageElement);
         });
     </script>
 </body>
