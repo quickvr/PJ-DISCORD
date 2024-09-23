@@ -1,0 +1,46 @@
+<!-- This is a static file -->
+<!-- served from your routes in server.js -->
+<!DOCTYPE html>
+<html lang="en">
+  <div id="loginPage">
+      <h2 id="prompt">Username:</h2>
+      <input id="usernameInput" type="text" placeholder="Username" maxlength="14">
+      <button id="usernameSubmit" type="button" onclick="submitUsername();">Submit</button>
+    </div>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A cool thing made with Glitch" />
+
+    <title>Socket.io Chat Room!</title>
+
+    <link
+      id="favicon"
+      rel="icon"
+      href="https://glitch.com/edit/favicon-app.ico"
+      type="image/x-icon"
+    />
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css" />
+
+    <!-- import the webpage's client-side javascript file -->
+    <script src="/script.js" defer></script>
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <h1 id="title">Welcome to the chat room!</h1>
+    <h4 id="userCount">There are currently x users online:</h4>
+    <h4 id="userList">Names</h4>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <input id="messageInput" type="text" placeholder="Your message" />
+    <button id="submitMessage" type="button" onclick="submitMessage();">Send</button>
+    <footer>Made with <a href="https://glitch.com">Glitch</a>!</footer>
+
+    <!-- include the Glitch button to show what the webpage is about and
+          to make it easier for folks to view source and remix -->
+    <div class="glitchButton" style="position:fixed;top:2em;right:20px;"></div>
+    <script src="https://button.glitch.me/button.js" defer></script>
+  </body>
+</html>
