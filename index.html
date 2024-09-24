@@ -6,49 +6,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Development Hub</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav {
+            margin: 20px 0;
+        }
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+        }
+        .content {
+            padding: 20px;
+        }
+        #drawingCanvas {
+            border: 1px solid #000;
+            cursor: crosshair;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to My Game Development Hub</h1>
-        <nav>
-            <ul>
-                <li><a href="#devlogs">Devlogs</a></li>
-                <li><a href="#games">Games</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <section id="devlogs">
-        <h2>Development Logs</h2>
-        <article>
-            <h3>Devlog Entry 1</h3>
-            <p>Details about the first devlog entry...</p>
-        </article>
-        <article>
-            <h3>Devlog Entry 2</h3>
-            <p>Details about the second devlog entry...</p>
-        </article>
-    </section>
+<header>
+    <h1>Welcome to My Game Development Hub</h1>
+</header>
 
-    <section id="games">
-        <h2>My Games</h2>
-        <div class="game">
-            <h3>Game Title 1</h3>
-            <p>Description of Game 1...</p>
-            <a href="link-to-game1">Play Now</a>
-        </div>
-        <div class="game">
-            <h3>Game Title 2</h3>
-            <p>Description of Game 2...</p>
-            <a href="link-to-game2">Play Now</a>
-        </div>
-    </section>
+<nav>
+    <a href="#devlogs">Devlogs</a>
+    <a href="#games">Games</a>
+    <a href="#drawing">Drawing Tab</a>
+</nav>
 
-    <footer id="contact">
-        <h2>Contact Me</h2>
-        <p>Email: <a href="mailto:your-email@example.com">your-email@example.com</a></p>
-    </footer>
+<div class="content" id="devlogs">
+    <h2>Development Logs</h2>
+    <p>Here you can find all my latest updates and devlogs about my games.</p>
+</div>
+
+<div class="content" id="games">
+    <h2>Games</h2>
+    <p>Explore the games I have developed and their features.</p>
+</div>
+
+<div class="content" id="drawing">
+    <h2>Drawing Tab</h2>
+    <canvas id="drawingCanvas" width="500" height="500"></canvas>
+    <br>
+    <label for="brushSize">Brush Size:</label>
+    <select id="brushSize">
+        <option value="5">Small</option>
+        <option value="10">Medium</option>
+        <option value="20">Large</option>
+    </select>
+    <label for="colorPicker">Color:</label>
+    <input type="color" id="colorPicker" value="#000000">
+    <button id="clearCanvas">Clear Canvas</button>
+</div>
+
+<script>
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+    let painting = false;
+    let brushSize = 5;
+    let brushColor = '#000000';
+
+    document.getElementById('brushSize').addEventListener('change', function() {
+        brushSize = this.value;
+    });
+
+    document.getElementById('colorPicker').addEventListener('input', function() {
+        brushColor = this.value;
+    });
+
+    canvas.addEventListener('mousedown', function(e) {
+        painting = true;
+        draw(e);
+    });
+
+    canvas.addEventListener('mouseup', function() {
+        painting = false;
+        ctx.beginPath();
+    });
+
+    canvas.addEventListener('mousemove', draw);
+
+    function draw(e) {
+        if (!painting) return;
+        ctx.lineWidth = brushSize;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = brushColor;
+
+        ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    }
+
+    document.getElementById('clearCanvas').addEventListener('click', function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+</script>
+
 </body>
 </html>
