@@ -5,84 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Development Hub</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        #home, #devlogs, #games, #drawing { display: none; }
-        #home { display: block; }
-        nav { margin-bottom: 20px; }
-        button { middle: 10px; }
-        #canvas { border: 1px solid black; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+        }
+        nav {
+            margin: 20px 0;
+        }
+        nav button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        .drawing-tab {
+            display: none;
+        }
+        .home {
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <nav>
-        <button onclick="showPage('home')">Home</button>
-        <button onclick="showPage('devlogs')">Devlogs</button>
-        <button onclick="showPage('games')">Games</button>
-        <button onclick="showPage('drawing')">Drawing Tab</button>
-    </nav>
-
-    <div id="home">
+    <header>
         <h1>Welcome to My Game Development Hub</h1>
-        <p>Explore my devlogs and games!</p>
+    </header>
+    <nav>
+        <button onclick="showHome()">Home</button>
+        <button onclick="showDevLogs()">DevLogs</button>
+        <button onclick="showDrawing()">Drawing Tab</button>
+    </nav>
+    <div id="home" class="home">
+        <h2>Latest Games and Updates</h2>
+        <p>Check out my latest game projects and development logs!</p>
     </div>
-
-    <div id="devlogs">
-        <h1>Development Logs</h1>
-        <p>Here you can find all my development updates.</p>
+    <div id="devlogs" class="hidden">
+        <h2>Development Logs</h2>
+        <p>Here you can find all my devlogs.</p>
     </div>
-
-    <div id="games">
-        <h1>My Games</h1>
-        <p>Check out the games I've created!</p>
-    </div>
-
-    <div id="drawing">
-        <h1>Drawing Tab</h1>
-        <canvas id="canvas" width="500" height="500"></canvas>
+    <div id="drawing" class="drawing-tab hidden">
+        <h2>Drawing Tab</h2>
+        <canvas id="canvas" width="500" height="500" style="border:1px solid #000;"></canvas>
         <br>
         <input type="color" id="colorPicker" value="#000000">
-        <select id="brushSize">
-            <option value="5">Small</option>
-            <option value="10">Medium</option>
-            <option value="20">Large</option>
-        </select>
+        <input type="range" id="brushSize" min="1" max="100" value="5">
         <button onclick="clearCanvas()">Clear</button>
     </div>
-
     <script>
-        let isDrawing = false;
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const colorPicker = document.getElementById('colorPicker');
-        const brushSize = document.getElementById('brushSize');
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        let painting = false;
 
-        canvas.addEventListener('mousedown', () => {
-            isDrawing = true;
+        function startPosition(e) {
+            painting = true;
+            draw(e);
+        }
+
+        function endPosition() {
+            painting = false;
             ctx.beginPath();
-        });
+        }
 
-        canvas.addEventListener('mouseup', () => {
-            isDrawing = false;
-            ctx.closePath();
-        });
+        function draw(e) {
+            if (!painting) return;
+            ctx.lineWidth = document.getElementById('brushSize').value;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = document.getElementById('colorPicker').value;
 
-        canvas.addEventListener('mousemove', (event) => {
-            if (isDrawing) {
-                ctx.lineWidth = brushSize.value;
-                ctx.strokeStyle = colorPicker.value;
-                ctx.lineTo(event.offsetX, event.offsetY);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(event.offsetX, event.offsetY);
-            }
-        });
+            ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        }
 
-        function showPage(page) {
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+
+        function showHome() {
+            document.getElementById('home').style.display = 'block';
+            document.getElementById('devlogs').style.display = 'none';
+            document.getElementById('drawing').style.display = 'none';
+        }
+
+        function showDevLogs() {
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('devlogs').style.display = 'block';
+            document.getElementById('drawing').style.display = 'none';
+        }
+
+        function showDrawing() {
             document.getElementById('home').style.display = 'none';
             document.getElementById('devlogs').style.display = 'none';
-            document.getElementById('games').style.display = 'none';
-            document.getElementById('drawing').style.display = 'none';
-            document.getElementById(page).style.display = 'block';
+            document.getElementById('drawing').style.display = 'block';
         }
 
         function clearCanvas() {
