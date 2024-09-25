@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Development Hub</title>
+    <title>Echo Phoenix Game Studio</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,11 +37,12 @@
 </head>
 <body>
     <header>
-        <h1>Welcome to My Game Development Hub</h1>
+        <h1>Welcome to Echo Phoenix Game Studio</h1>
     </header>
     <nav>
         <button onclick="showHome()">Home</button>
         <button onclick="showDevLogs()">DevLogs</button>
+        <button onclick="showGames()">Games</button>
         <button onclick="showDrawing()">Drawing Tab</button>
     </nav>
     <div id="home" class="home">
@@ -49,6 +50,10 @@
         <p>Check out my latest game projects and development logs!</p>
     </div>
     <div id="devlogs" class="hidden">
+        <h2>Development Logs</h2>
+        <p>Here you can find all my devlogs.</p>
+    </div>
+    <div id="games" class="hidden">
         <h2>Development Logs</h2>
         <p>Here you can find all my devlogs.</p>
     </div>
@@ -94,19 +99,29 @@
         function showHome() {
             document.getElementById('home').style.display = 'block';
             document.getElementById('devlogs').style.display = 'none';
+            document.getElementById('games').style.display = 'none';
             document.getElementById('drawing').style.display = 'none';
         }
 
         function showDevLogs() {
             document.getElementById('home').style.display = 'none';
             document.getElementById('devlogs').style.display = 'block';
+            document.getElementById('games').style.display = 'none';
             document.getElementById('drawing').style.display = 'none';
         }
 
         function showDrawing() {
             document.getElementById('home').style.display = 'none';
             document.getElementById('devlogs').style.display = 'none';
+            document.getElementById('games').style.display = 'none';
             document.getElementById('drawing').style.display = 'block';
+        }
+        
+        function showGames() {
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('devlogs').style.display = 'none';
+            document.getElementById('games').style.display = 'block';
+            document.getElementById('drawing').style.display = 'none';
         }
 
         function clearCanvas() {
