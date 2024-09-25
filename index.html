@@ -1,132 +1,49 @@
+# EchoPhoenixGameStudio
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Echo Phoenix Game Studio</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-        }
-        header {
-            background: #333;
-            color: #fff;
-            padding: 10px 0;
-        }
-        nav {
-            margin: 20px 0;
-        }
-        nav button {
-            margin: 0 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .hidden {
-            display: none;
-        }
-        .drawing-tab {
-            display: none;
-        }
-        .home {
-            display: block;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
         <h1>Welcome to Echo Phoenix Game Studio</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="games.html">Games</a></li>
+                <li><a href="devlogs.html">Devlogs</a></li>
+            </ul>
+        </nav>
     </header>
-    <nav>
-        <button onclick="showHome()">Home</button>
-        <button onclick="showDevLogs()">DevLogs</button>
-        <button onclick="showGames()">Games</button>
-        <button onclick="showDrawing()">Drawing Tab</button>
-    </nav>
-    <div id="home" class="home">
-        <h2>Latest Games and Updates</h2>
-        <p>Check out my latest game projects and development logs!</p>
-    </div>
-    <div id="devlogs" class="hidden">
-        <h2>Development Logs</h2>
-        <p>Here you can find all my devlogs.</p>
-    </div>
-    <div id="games" class="hidden">
-        <h2>Development Logs</h2>
-        <p>Here you can find all my devlogs.</p>
-    </div>
-    <div id="drawing" class="drawing-tab hidden">
-        <h2>Drawing Tab</h2>
-        <canvas id="canvas" width="500" height="500" style="border:1px solid #000;"></canvas>
-        <br>
-        <input type="color" id="colorPicker" value="#000000">
-        <input type="range" id="brushSize" min="1" max="100" value="5">
-        <button onclick="clearCanvas()">Clear</button>
-    </div>
-    <script>
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
-        let painting = false;
 
-        function startPosition(e) {
-            painting = true;
-            draw(e);
-        }
+    <main>
+        <section id="games">
+            <h2>Our Games</h2>
+            <p>Explore our exciting games!</p>
+            <ul>
+                <li><a href="game1.html">Game 1</a></li>
+                <li><a href="game2.html">Game 2</a></li>
+                <li><a href="game3.html">Game 3</a></li>
+            </ul>
+        </section>
 
-        function endPosition() {
-            painting = false;
-            ctx.beginPath();
-        }
+        <section id="devlogs">
+            <h2>Development Logs</h2>
+            <p>Stay updated with our latest development news!</p>
+            <ul>
+                <li><a href="devlog1.html">Devlog 1</a></li>
+                <li><a href="devlog2.html">Devlog 2</a></li>
+                <li><a href="devlog3.html">Devlog 3</a></li>
+            </ul>
+        </section>
+    </main>
 
-        function draw(e) {
-            if (!painting) return;
-            ctx.lineWidth = document.getElementById('brushSize').value;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = document.getElementById('colorPicker').value;
-
-            ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-        }
-
-        canvas.addEventListener('mousedown', startPosition);
-        canvas.addEventListener('mouseup', endPosition);
-        canvas.addEventListener('mousemove', draw);
-
-        function showHome() {
-            document.getElementById('home').style.display = 'block';
-            document.getElementById('devlogs').style.display = 'none';
-            document.getElementById('games').style.display = 'none';
-            document.getElementById('drawing').style.display = 'none';
-        }
-
-        function showDevLogs() {
-            document.getElementById('home').style.display = 'none';
-            document.getElementById('devlogs').style.display = 'block';
-            document.getElementById('games').style.display = 'none';
-            document.getElementById('drawing').style.display = 'none';
-        }
-
-        function showDrawing() {
-            document.getElementById('home').style.display = 'none';
-            document.getElementById('devlogs').style.display = 'none';
-            document.getElementById('games').style.display = 'none';
-            document.getElementById('drawing').style.display = 'block';
-        }
-        
-        function showGames() {
-            document.getElementById('home').style.display = 'none';
-            document.getElementById('devlogs').style.display = 'none';
-            document.getElementById('games').style.display = 'block';
-            document.getElementById('drawing').style.display = 'none';
-        }
-
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-    </script>
+    <footer>
+        <p>&copy; 2023 Echo Phoenix Game Studio. All rights reserved.</p>
+    </footer>
 </body>
 </html>
