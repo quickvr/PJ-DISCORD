@@ -3,133 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>Echo Phoenix Game Studio</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-        }
-        header {
-            background: #333;
-            color: #fff;
-            padding: 10px 0;
-        }
-        nav {
-            margin: 20px 0;
-        }
-        nav button {
-            margin: 0 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .hidden {
-            display: none;
-        }
-        .drawing-tab {
-            display: none;
-        }
-        .home {
-            display: block;
-        }
-        footer {
-            text-align: center;
-            padding: 15px 0;
-            background: #444;
-            color: #fff;
-        }
-    </style>
 </head>
 <body>
     <header>
         <h1>Welcome to Echo Phoenix Game Studio</h1>
+        <nav>
+            <ul>
+                <li><a href="#games" onclick="showPage('games')">Games</a></li>
+                <li><a href="#devlogs" onclick="showPage('devlogs')">Devlogs</a></li>
+            </ul>
+        </nav>
     </header>
-    <nav>
-        <button onclick="showHome()">Home</button>
-        <button onclick="showDevLogs()">DevLogs</button>
-        <button onclick="showGames()">Games</button>
-        <button onclick="showDrawing()">Drawing Tab</button>
-    </nav>
+    
     <main>
-    <div id="home" class="home">
-        <h2>Latest Games and Updates</h2>
-        <p>Check out my latest game projects and development logs!</p>
-    </div>
-    <div id="devlogs" class="hidden">
-        <h2>Development Logs</h2>
-        <p>Here you can find all my devlogs.</p>
-    </div>
-    <div id="games" class="hidden">
-        <h2>Games I made</h2>
-        <p>Here you can find all my Games.</p>
-    </div>
+        <div id="games" class="page">
+            <h2>Our Games</h2>
+            <p>Explore our exciting games!</p>
+        </div>
+        <div id="devlogs" class="page" style="display:none;">
+            <h2>Development Logs</h2>
+            <p>Follow our journey in game development!</p>
+        </div>
     </main>
-    <script>
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
-        let painting = false;
 
-        function startPosition(e) {
-            painting = true;
-            draw(e);
-        }
-
-        function endPosition() {
-            painting = false;
-            ctx.beginPath();
-        }
-
-        function draw(e) {
-            if (!painting) return;
-            ctx.lineWidth = document.getElementById('brushSize').value;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = document.getElementById('colorPicker').value;
-
-            ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-        }
-
-        canvas.addEventListener('mousedown', startPosition);
-        canvas.addEventListener('mouseup', endPosition);
-        canvas.addEventListener('mousemove', draw);
-
-        function showHome() {
-            document.getElementById('home').style.display = 'block';
-            document.getElementById('devlogs').style.display = 'none';
-            document.getElementById('games').style.display = 'none';
-            document.getElementById('drawing').style.display = 'none';
-        }
-
-        function showDevLogs() {
-            document.getElementById('home').style.display = 'none';
-            document.getElementById('devlogs').style.display = 'block';
-            document.getElementById('games').style.display = 'none';
-            document.getElementById('drawing').style.display = 'none';
-        }
-
-        function showDrawing() {
-            document.getElementById('home').style.display = 'none';
-            document.getElementById('devlogs').style.display = 'none';
-            document.getElementById('games').style.display = 'none';
-            document.getElementById('drawing').style.display = 'block';
-        }
-        
-        function showGames() {
-            document.getElementById('home').style.display = 'none';
-            document.getElementById('devlogs').style.display = 'none';
-            document.getElementById('games').style.display = 'block';
-            document.getElementById('drawing').style.display = 'none';
-        }
-
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-    </script>
-        <footer>
+    <footer>
         <p>&copy; 2023 Echo Phoenix Game Studio. All rights reserved.</p>
     </footer>
+
+    <script>
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'block';
+        }
+    </script>
 </body>
 </html>
