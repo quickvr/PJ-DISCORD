@@ -8,30 +8,24 @@
 </head>
 <body>
     <header>
-        <h1>Welcome to Echo Phoenix Game Studio</h1>
+        <h1>Echo Phoenix Game Studio</h1>
         <nav>
             <ul>
-                <li><a href="#home" onclick="showPage('home')">Home</a></li>
-                <li><a href="#games" onclick="showPage('games')">Games</a></li>
-                <li><a href="#devlogs" onclick="showPage('devlogs')">Devlogs</a></li>
+                <li><a href="#games" onclick="switchPage('games')">Games</a></li>
+                <li><a href="#devlogs" onclick="switchPage('devlogs')">Devlogs</a></li>
             </ul>
         </nav>
     </header>
-    
+
     <main>
-         <div id="hame" class="page">
-            <h2>Home Page</h2>
-            <p>Explore our exciting games!</p>
-        </div>
-        <div id="games" class="page">
+        <section id="games" class="page">
             <h2>Our Games</h2>
-            <p>Explore our exciting games!</p>
-        </div>
-        <div id="devlogs" class="page" style="display:none;">
+            <p>Discover the games we have created!</p>
+        </section>
+        <section id="devlogs" class="page" style="display:none;">
             <h2>Development Logs</h2>
-            <p>Follow our journey in game development!</p>
-        </div>
-        
+            <p>Check out our latest updates!</p>
+        </section>
     </main>
 
     <footer>
@@ -39,7 +33,7 @@
     </footer>
 
     <script>
-        function showPage(pageId) {
+        function switchPage(pageId) {
             const pages = document.querySelectorAll('.page');
             pages.forEach(page => {
                 page.style.display = 'none';
