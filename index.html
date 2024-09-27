@@ -1,66 +1,73 @@
-# Simple FPS Game
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple FPS Game</title>
+    <title>2D Shooting Game</title>
     <style>
         body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
+        canvas { background: #000; display: block; margin: auto; }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
-    <script src="https://threejs.org/build/three.js"></script>
-    <script src="https://threejs.org/examples/js/controls/PointerLockControls.js"></script>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
     <script>
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas') });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
-        
-        const floorGeometry = new THREE.PlaneGeometry(100, 100);
-        const floorMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa, side: THREE.DoubleSide });
-        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-        floor.rotation.x = Math.PI / 2;
-        scene.add(floor);
-        
-        camera.position.y = 1.6;
-        camera.position.z = 5;
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-        const controls = new THREE.PointerLockControls(camera, document.body);
-        document.body.appendChild(controls.getObject());
+        let score = 0;
+        let health = 100;
+        let enemies = [];
+        const enemyCount = 5;
 
-        document.addEventListener('click', () => {
-            controls.lock();
-        });
-
-        const moveSpeed = 0.1;
-        const keys = {};
-        document.addEventListener('keydown', (event) => {
-            keys[event.code] = true;
-        });
-        document.addEventListener('keyup', (event) => {
-            keys[event.code] = false;
-        });
-
-        function animate() {
-            requestAnimationFrame(animate);
-            if (keys['KeyW']) controls.moveForward(moveSpeed);
-            if (keys['KeyS']) controls.moveForward(-moveSpeed);
-            if (keys['KeyA']) controls.moveRight(-moveSpeed);
-            if (keys['KeyD']) controls.moveRight(moveSpeed);
-            renderer.render(scene, camera);
+        class Enemy {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = 30;
+            }
+            draw() {
+                ctx.fillStyle = 'red';
+                ctx.fillRect(this.x, this.y, this.size, this.size);
+            }
         }
 
-        animate();
+        function spawnEnemies() {
+            for (let i = 0; i < enemyCount; i++) {
+                enemies.push(new Enemy());
+            }
+        }
+
+        function drawScore() {
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Score: ${score}`, 10, 20);
+            ctx.fillText(`Health: ${health}`, 10, 50);
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            enemies.forEach(enemy => enemy.draw());
+            drawScore();
+            requestAnimationFrame(gameLoop);
+        }
+
+        canvas.addEventListener('click', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            enemies.forEach((enemy, index) => {
+                if (mouseX > enemy.x && mouseX < enemy.x + enemy.size &&
+                    mouseY > enemy.y && mouseY < enemy.y + enemy.size) {
+                    enemies.splice(index, 1);
+                    score += 10;
+                }
+            });
+        });
+
+        spawnEnemies();
+        gameLoop();
     </script>
 </body>
 </html>
