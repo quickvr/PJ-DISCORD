@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2D Shooting Game</title>
+    <title>Shooting Game</title>
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { background: #000; display: block; margin: auto; }
@@ -15,58 +15,96 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        let score = 0;
-        let health = 100;
+        let player = { x: 400, y: 300, width: 20, height: 20, health: 100, score: 0 };
+        let bullets = [];
         let enemies = [];
-        const enemyCount = 5;
+        let keys = {};
 
-        class Enemy {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = 30;
+        function spawnEnemy() {
+            enemies.push({ x: Math.random() * canvas.width, y: 0, width: 20, height: 20 });
+        }
+
+        function update() {
+            if (keys['w'] && player.y > 0) player.y -= 5;
+            if (keys['s'] && player.y < canvas.height - player.height) player.y += 5;
+            if (keys['a'] && player.x > 0) player.x -= 5;
+            if (keys['d'] && player.x < canvas.width - player.width) player.x += 5;
+
+            bullets.forEach((bullet, index) => {
+                bullet.y -= 5;
+                if (bullet.y < 0) bullets.splice(index, 1);
+            });
+
+            enemies.forEach((enemy, index) => {
+                enemy.y += 2;
+                if (enemy.y > canvas.height) enemies.splice(index, 1);
+                if (collision(player, enemy)) {
+                    player.health -= 10;
+                    enemies.splice(index, 1);
+                }
+            });
+
+            bullets.forEach((bullet, bIndex) => {
+                enemies.forEach((enemy, eIndex) => {
+                    if (collision(bullet, enemy)) {
+                        player.score += 10;
+                        bullets.splice(bIndex, 1);
+                        enemies.splice(eIndex, 1);
+                    }
+                });
+            });
+
+            if (player.health <= 0) {
+                alert('Game Over! Your score: ' + player.score);
+                document.location.reload();
             }
-            draw() {
+        }
+
+        function collision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'green';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+
+            bullets.forEach(bullet => {
+                ctx.fillStyle = 'yellow';
+                ctx.fillRect(bullet.x, bullet.y, 5, 10);
+            });
+
+            enemies.forEach(enemy => {
                 ctx.fillStyle = 'red';
-                ctx.fillRect(this.x, this.y, this.size, this.size);
-            }
-        }
+                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+            });
 
-        function spawnEnemies() {
-            for (let i = 0; i < enemyCount; i++) {
-                enemies.push(new Enemy());
-            }
-        }
-
-        function drawScore() {
             ctx.fillStyle = 'white';
-            ctx.font = '20px Arial';
-            ctx.fillText(`Score: ${score}`, 10, 20);
-            ctx.fillText(`Health: ${health}`, 10, 50);
+            ctx.fillText('Score: ' + player.score, 10, 20);
+            ctx.fillText('Health: ' + player.health, 10, 40);
         }
 
         function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            enemies.forEach(enemy => enemy.draw());
-            drawScore();
+            update();
+            draw();
             requestAnimationFrame(gameLoop);
         }
 
-        canvas.addEventListener('click', (event) => {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left;
-            const mouseY = event.clientY - rect.top;
-
-            enemies.forEach((enemy, index) => {
-                if (mouseX > enemy.x && mouseX < enemy.x + enemy.size &&
-                    mouseY > enemy.y && mouseY < enemy.y + enemy.size) {
-                    enemies.splice(index, 1);
-                    score += 10;
-                }
-            });
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === ' ') {
+                bullets.push({ x: player.x + player.width / 2 - 2.5, y: player.y });
+            }
         });
 
-        spawnEnemies();
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        setInterval(spawnEnemy, 1000);
         gameLoop();
     </script>
 </body>
