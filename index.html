@@ -3,44 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Echo Phoenix Game Studio</title>
+    <title>Full FPS Experience</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Echo Phoenix Game Studio</h1>
-        <nav>
-            <ul>
-                <li><a href="#games" onclick="switchPage('games')">Games</a></li>
-                <li><a href="#devlogs" onclick="switchPage('devlogs')">Devlogs</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <section id="games" class="page">
-            <h2>Our Games</h2>
-            <p>Discover the games we have created!</p>
-        </section>
-        <section id="devlogs" class="page" style="display:none;">
-            <h2>Development Logs</h2>
-            <h2>___________________________________________________________________________________</h2>
-            <p>Check out our latest updates!</p>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2024 Echo Phoenix Game Studio. All rights reserved.</p>
-    </footer>
-
+    <script src="https://threejs.org/build/three.js"></script>
     <script>
-        function switchPage(pageId) {
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => {
-                page.style.display = 'none';
-            });
-            document.getElementById(pageId).style.display = 'block';
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const floorGeometry = new THREE.PlaneGeometry(100, 100);
+        const floorMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        scene.add(floor);
+
+        const bullets = [];
+        const bulletGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+        const bulletMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+        function shoot() {
+            const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+            bullet.position.copy(camera.position);
+            bullet.velocity = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).normalize().multiplyScalar(0.5);
+            bullets.push(bullet);
+            scene.add(bullet);
         }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            bullets.forEach((bullet, index) => {
+                bullet.position.add(bullet.velocity);
+                if (bullet.position.z < -10) {
+                    scene.remove(bullet);
+                    bullets.splice(index, 1);
+                }
+            });
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        document.addEventListener('keydown', (event) => {
+            switch(event.key) {
+                case 'w': camera.position.z -= 0.1; break;
+                case 's': camera.position.z += 0.1; break;
+                case 'a': camera.position.x -= 0.1; break;
+                case 'd': camera.position.x += 0.1; break;
+                case ' ': shoot(); break;
+            }
+        });
     </script>
 </body>
 </html>
