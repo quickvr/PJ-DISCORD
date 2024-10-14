@@ -3,57 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perlin Noise Mountain</title>
+    <title>Perlin Noise Mountain Simulator</title>
     <style>
         body {
-            margin: 0;
-            overflow: hidden;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #e0f7fa;
         }
         canvas {
-            display: block;
+            border: 1px solid #000;
+        }
+        .controls {
+            margin: 20px;
         }
     </style>
 </head>
 <body>
-    <canvas id="mountainCanvas"></canvas>
-    <div>
-        <label for="color1">Color 1:</label>
-        <input type="color" id="color1" value="#8B4513">
-        <label for="color2">Color 2:</label>
-        <input type="color" id="color2" value="#A0522D">
-        <label for="color3">Color 3:</label>
-        <input type="color" id="color3" value="#D2691E">
-        <label for="color4">Color 4:</label>
-        <input type="color" id="color4" value="#FFD700">
-        <label for="color5">Color 5:</label>
-        <input type="color" id="color5" value="#ADFF2F">
-        <button id="generate">Generate Mountain</button>
+    <h1>Perlin Noise Mountain Simulator</h1>
+    <canvas id="mountainCanvas" width="800" height="400"></canvas>
+    <div class="controls">
+        <label for="colorPicker">Choose Mountain Color:</label>
+        <input type="color" id="colorPicker" value="#8B4513">
+        <br>
+        <label for="settings">Select Mountain Setting:</label>
+        <select id="settings">
+            <option value="1">Setting 1</option>
+            <option value="2">Setting 2</option>
+            <option value="3">Setting 3</option>
+            <option value="4">Setting 4</option>
+            <option value="5">Setting 5</option>
+        </select>
+        <br>
+        <button id="generateButton">Generate Mountain</button>
+        <button id="clearButton">Clear Mountain</button>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/perlin.js/1.0.0/perlin.min.js"></script>
     <script>
         const canvas = document.getElementById('mountainCanvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        const colorPicker = document.getElementById('colorPicker');
+        const settings = document.getElementById('settings');
+        const generateButton = document.getElementById('generateButton');
+        const clearButton = document.getElementById('clearButton');
 
-        function generateMountain() {
-            const colors = [
-                document.getElementById('color1').value,
-                document.getElementById('color2').value,
-                document.getElementById('color3').value,
-                document.getElementById('color4').value,
-                document.getElementById('color5').value
-            ];
-            const noise = new SimplexNoise();
+        function drawMountain(setting) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = colorPicker.value;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
             for (let x = 0; x < canvas.width; x++) {
-                const y = (noise.noise2D(x / 100, 0) + 1) * (canvas.height / 2);
-                ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
-                ctx.fillRect(x, y, 1, canvas.height - y);
+                const y = canvas.height - (Perlin.noise(x / 100, setting) * 100);
+                ctx.lineTo(x, y);
             }
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.closePath();
+            ctx.fill();
         }
 
-        document.getElementById('generate').addEventListener('click', generateMountain);
-        generateMountain();
+        generateButton.addEventListener('click', () => {
+            const selectedSetting = settings.value;
+            drawMountain(selectedSetting);
+        });
+
+        clearButton.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
 </body>
 </html>
