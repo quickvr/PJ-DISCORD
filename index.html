@@ -1,55 +1,56 @@
-# Procedurally Generated Mountain Simulator
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mountain Simulator</title>
+    <title>Procedurally Generated Mountain</title>
     <style>
         body {
+            background-color: #87CEEB;
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #e0f7fa;
         }
         canvas {
             border: 1px solid #000;
         }
-        #controls {
-            margin-top: 20px;
+        .settings {
+            margin: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Procedurally Generated Mountain Simulator</h1>
     <canvas id="mountainCanvas" width="800" height="400"></canvas>
-    <div id="controls">
-        <label for="seed">Seed: </label>
-        <input type="number" id="seed" value="1">
-        <button onclick="generateMountain()">Generate Mountain</button>
+    <div class="settings">
+        <label for="colorPicker">Choose Mountain Color:</label>
+        <input type="color" id="colorPicker" value="#8B4513">
+        <label for="heightRange">Mountain Height:</label>
+        <input type="range" id="heightRange" min="50" max="300" value="150">
+        <label for="widthRange">Mountain Width:</label>
+        <input type="range" id="widthRange" min="100" max="800" value="400">
+        <button id="generateButton">Generate Mountain</button>
     </div>
     <script>
-        function generateMountain() {
-            const canvas = document.getElementById('mountainCanvas');
-            const ctx = canvas.getContext('2d');
-            const seed = document.getElementById('seed').value;
-            const height = canvas.height;
-            const width = canvas.width;
+        const canvas = document.getElementById('mountainCanvas');
+        const ctx = canvas.getContext('2d');
 
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = '#8d6e63';
+        function drawMountain(color, height, width) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = color;
             ctx.beginPath();
-            ctx.moveTo(0, height);
-            for (let x = 0; x <= width; x++) {
-                const y = height - (Math.sin((x + parseInt(seed)) * 0.01) * 50 + 100);
-                ctx.lineTo(x, y);
-            }
-            ctx.lineTo(width, height);
+            ctx.moveTo(canvas.width / 2, canvas.height);
+            ctx.lineTo(canvas.width / 2 - width / 2, canvas.height - height);
+            ctx.lineTo(canvas.width / 2 + width / 2, canvas.height - height);
             ctx.closePath();
             ctx.fill();
         }
 
-        window.onload = generateMountain;
+        document.getElementById('generateButton').addEventListener('click', () => {
+            const color = document.getElementById('colorPicker').value;
+            const height = document.getElementById('heightRange').value;
+            const width = document.getElementById('widthRange').value;
+            drawMountain(color, height, width);
+        });
     </script>
 </body>
 </html>
