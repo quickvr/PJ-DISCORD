@@ -1,34 +1,55 @@
+# Procedurally Generated Mountain Simulator
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Webhook Communication</title>
-    <script>
-        async function sendMessage() {
-            const message = document.getElementById('messageInput').value;
-            const webhookURL = 'YOUR_DISCORD_WEBHOOK_URL';
-
-            const response = await fetch(webhookURL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ content: message })
-            });
-
-            if (response.ok) {
-                document.getElementById('messageInput').value = '';
-                alert('Message sent to Discord!');
-            } else {
-                alert('Failed to send message.');
-            }
+    <title>Mountain Simulator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #e0f7fa;
         }
-    </script>
+        canvas {
+            border: 1px solid #000;
+        }
+        #controls {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Talk to Discord</h1>
-    <input type="text" id="messageInput" placeholder="Type your message here...">
-    <button onclick="sendMessage()">Send to Discord</button>
+    <h1>Procedurally Generated Mountain Simulator</h1>
+    <canvas id="mountainCanvas" width="800" height="400"></canvas>
+    <div id="controls">
+        <label for="seed">Seed: </label>
+        <input type="number" id="seed" value="1">
+        <button onclick="generateMountain()">Generate Mountain</button>
+    </div>
+    <script>
+        function generateMountain() {
+            const canvas = document.getElementById('mountainCanvas');
+            const ctx = canvas.getContext('2d');
+            const seed = document.getElementById('seed').value;
+            const height = canvas.height;
+            const width = canvas.width;
+
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#8d6e63';
+            ctx.beginPath();
+            ctx.moveTo(0, height);
+            for (let x = 0; x <= width; x++) {
+                const y = height - (Math.sin((x + parseInt(seed)) * 0.01) * 50 + 100);
+                ctx.lineTo(x, y);
+            }
+            ctx.lineTo(width, height);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        window.onload = generateMountain;
+    </script>
 </body>
 </html>
